@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"strings"
-	"strconv"
 	"github.com/uuid"
+	"strings"
 	"os"
 	"io"
 )
@@ -60,14 +59,14 @@ func (this *BaseController) SaveFile(para, prefix string)(url, fileName string){
 	fileName = h.Filename
 	typename := strings.Split(fileName, ".")
 	keyName := prefix +"_"+ uuid.Rand().Raw()+"."+typename[len(typename)-1]
-	url = "/static/base/upload/"+keyName
+	url = "/static/upload/"+keyName
 	f, _ := os.Create("static/upload/"+keyName)
 	defer f.Close()
 	io.Copy(f, file)
 	if upload {
-		if flag, name := UploadFile("static/base/upload/"+keyName, keyName); flag == true{
+		if flag, name := UploadFile("static/upload/"+keyName, keyName); flag == true{
 			keyName = name
-			os.Remove("static/base/upload/"+keyName)
+			os.Remove("static/upload/"+keyName)
 			url = QiniuPrefix+keyName
 		}
 	}
