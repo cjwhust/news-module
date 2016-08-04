@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"github.com/pquerna/ffjson/ffjson"
-	"frontsurf/controllers"
+	"github.com/astaxie/beego"
 	"github.com/uuid"
-	"frontsurf/utils"
 	"encoding/base64"
 	"io/ioutil"
 	"regexp"
@@ -13,7 +12,7 @@ import (
 )
 
 type UeditorController struct {
-	controllers.BaseController
+	BaseController
 }
 
 func (uc *UeditorController) UEController(){
@@ -51,12 +50,12 @@ func (uc *UeditorController) UEController(){
 		keyName := "ueditor_"+uuid.Rand().Raw()+".jpg"
 		url := "/static/base/upload/"+keyName
 		if err := ioutil.WriteFile("static/base/upload/"+keyName, buffer, 0666); err != nil {
-			utils.Log.Error("upload scrawl error: ", err)
+			beego.BeeLogger.Error("upload scrawl error: ", err)
 		}else {
-			if flag, name := utils.UploadFile("static/base/upload/"+keyName, keyName); flag == true{
+			if flag, name := UploadFile("static/base/upload/"+keyName, keyName); flag == true{
 				keyName = name
 				os.Remove("static/base/upload/"+keyName)
-				url = utils.QiniuPrefix+keyName
+				url = QiniuPrefix+keyName
 			}
 		}
 		uc.Data["json"] = map[string]interface{}{"state":"SUCCESS","url": url,"title":keyName,"original":keyName}
