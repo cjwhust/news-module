@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	beego.SetLogger("file", `{"filename":"logs/frontsurf.log","maxlines":1000000}`)
+	beego.SetLogger("file", `{"filename":"logs/module-news.log","maxlines":1000000}`)
 	m.InitDB(true)
 	beego.Run()
 }

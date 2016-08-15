@@ -7,7 +7,7 @@ import (
 )
 
 func init(){
-	orm.RegisterModel(new(News))
+	orm.RegisterModel(new(News), new(Message), new(MessageFlag))
 }
 
 func InitDB(flag bool){
