@@ -16,7 +16,7 @@ type MessResponse struct {
 	Content template.HTML
 	PublishTime string
 	Description string
-
+	MessFlagName string
 }
 
 func (c *MainController) Get() {
@@ -38,6 +38,8 @@ func (c *MainController) GetOne(){
 		mr.PublishTime = mess.PublishTime
 		mr.Title = mess.Name
 		mr.Description = mess.Description
+		mf, _ := m.GetOneMessageFlag(mess.MessageFlagId)
+		mr.MessFlagName = mf.Name
 		c.Data["Mess"] = mr
 		c.TplName = "news.tpl"
 	}
@@ -50,8 +52,8 @@ func (c *MainController) Save(){
 	message.Context = c.GetString("content")
 	message.MessageFlagId,_ = c.GetInt("flag")
 	message.Description = c.GetString("description")
-	message.DeleteFlag = 0
-	message.Status = 0
+	message.DeleteFlag = "0"
+	message.Status = "0"
 	message.Id = uuid.Rand().Raw()
 	url, _ := c.SaveFile("Image", "news")
 	message.ImgUrl = url

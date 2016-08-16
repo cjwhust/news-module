@@ -55,6 +55,12 @@ func GetOneMessage(id string)(m *Message, err error){
 	return nil, err
 }
 
+func GetOneMessageFlag(id int)(m *MessageFlag, err error){
+	m = &MessageFlag{Id: id}
+	err = orm.NewOrm().Read(m)
+	return
+}
+
 func (m *MessageFlag) QueryAll(typeId int)(mf []MessageFlag, err error){
 	qs := m.Query()
 	if _,err = qs.Filter("type_id__exact", typeId).All(&mf); err!=nil{
