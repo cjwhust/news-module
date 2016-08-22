@@ -1,6 +1,6 @@
 (function () {
     var parent = window.parent;
-    document.domain = location.hostname;
+    //document.domain = location.hostname;
     //dialog对象
     dialog = parent.$EDITORUI[window.frameElement.id.replace( /_iframe$/, '' )];
     //当前打开dialog的编辑器实例
