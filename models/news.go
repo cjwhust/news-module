@@ -1,103 +1,70 @@
 package company
 
-import (
-	"github.com/astaxie/beego/orm"
-)
+import "github.com/astaxie/beego/orm"
 
 type News struct {
-	Id int `orm:"column(id);auto"`
-	Title string `orm:"size(50);unique"`
-	Description string `orm:"size(255)"`
-	ImgUrl string `orm:"size(255)"`
-	Content string `orm:"type(text)"`
-	PublishTime string `orm:"size(20)"`
-	Type int8
+	Id string `orm:"column(id);size(32);pk"`
+	UserId string `orm:"size(32)"`
+	MessageTypeId int
+	Name string `orm:"size(200)"`
+	PublishTime string `orm:"size(30)"`
+	Time string `orm:"size(30)"`
+	ParentId string `orm:"size(32)"`
+	Status string `orm:"size(1)"`
+	DeleteFlag string `orm:"size(1)"`
+	Context string `orm:"type(text)"`
+	MessageFlagId int
+	Description string `orm:"size(200)"`
+	ImgUrl string `orm:"size(200)"`
 }
 
-func (n *News) TableName() string{
-	return "tb_news"
+func (m *News) TableName() string{
+	return "tb_message"
 }
 
-func (n *News) Insert() error {
-	if _, err := orm.NewOrm().Insert(n); err != nil{
+func (m *News) Query() orm.QuerySeter{
+	return orm.NewOrm().QueryTable(m)
+}
+
+type NewsFlag struct {
+	Id int `orm:"column(id);pk"`
+	Name string `orm:"size(10)"`
+	TypeId int8 `orm:column(type_id)`
+}
+
+func (m *NewsFlag) TableName() string{
+	return "tb_message_flag"
+}
+
+func (m *NewsFlag) Query() orm.QuerySeter{
+	return  orm.NewOrm().QueryTable(m)
+}
+
+func (m *News) Insert() error {
+	if _, err := orm.NewOrm().Insert(m); err != nil{
 		return err
 	}
 	return  nil
 }
 
-func (n *News) Query() orm.QuerySeter {
-	return orm.NewOrm().QueryTable(n)
-}
-
-func GetOneNews(id int) (n *News, err error){
-	n = &News{Id: id}
-	if err = orm.NewOrm().Read(n); err == nil{
-		return n, nil
+func GetOneMessage(id string)(m *News, err error){
+	m = &News{Id: id}
+	if err = orm.NewOrm().Read(m); err == nil{
+		return m, nil
 	}
 	return nil, err
 }
 
-func FindNewsPagination(id int)(before, after int){
-	var newses []News
-	news := new(News)
-	orm.NewOrm().QueryTable(news).Filter("id__gt", id).OrderBy("id").All(&newses)
-	if len(newses) > 0 {
-		after = newses[0].Id
-	}else {
-		after = 0
-	}
-	newses = nil
-	orm.NewOrm().QueryTable(news).Filter("id__lt", id).OrderBy("-id").All(&newses)
-	if len(newses) > 0 {
-		before = newses[0].Id
-	}else {
-		before = 0
-	}
-	return before, after
+func GetOneMessageFlag(id int)(m *NewsFlag, err error){
+	m = &NewsFlag{Id: id}
+	err = orm.NewOrm().Read(m)
+	return
 }
 
-func (n *News) QueryByCondition(fields ...int)(newses []News, total int64, err error){
-
-	qs := n.Query()
-	if fields[0] != 0{
-		qs = qs.Filter("type__exact", fields[0])
+func (m *NewsFlag) QueryAll(typeId int)(mf []NewsFlag, err error){
+	qs := m.Query()
+	if _,err = qs.Filter("type_id__exact", typeId).All(&mf); err!=nil{
+		return
 	}
-	if fields[1] == 0 {
-		total, err = qs.Count()
-	}else {
-		total, err = qs.Limit(fields[1], fields[2]).OrderBy("-PublishTime").All(&newses)
-	}
-	if err == nil{
-		return newses, total, nil
-	}
-	return nil, 0, err
-}
-
-func (n *News) Delete() error{
-	if _, err := orm.NewOrm().Delete(n); err!= nil {
-		return  err
-	}
-	return nil
-}
-
-func (n *News) QueryAll() (news []News, total int64, err error){
-	qs := n.Query()
-	if total, err = qs.All(&news); err == nil {
-		return news, total, nil
-	}
-	return nil, 0, err
-}
-
-func (n *News) Update(fields ...string) error {
-	if _, err := orm.NewOrm().Update(n, fields...); err!=nil{
-		return  err
-	}
-	return nil
-}
-
-func (n *News) Read(fields ...string) error{
-	if err := orm.NewOrm().Read(n, fields...); err != nil{
-		return err
-	}
-	return nil
+	return
 }

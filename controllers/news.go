@@ -46,19 +46,19 @@ func (c *MainController) GetOne(){
 }
 
 func (c *MainController) Save(){
-	var message m.Message
-	message.Name = c.GetString("title")
-	message.Time = time.Now().Format("2006-01-02 15:04:05")
-	message.Context = c.GetString("content")
-	message.MessageFlagId,_ = c.GetInt("flag")
-	message.Description = c.GetString("description")
-	message.DeleteFlag = "0"
-	message.Status = "0"
-	message.Id = uuid.Rand().Raw()
+	var news m.News
+	news.Name = c.GetString("title")
+	news.Time = time.Now().Format("2006-01-02 15:04:05")
+	news.Context = c.GetString("content")
+	news.MessageFlagId,_ = c.GetInt("flag")
+	news.Description = c.GetString("description")
+	news.DeleteFlag = "0"
+	news.Status = "0"
+	news.Id = uuid.Rand().Raw()
 	url, _ := c.SaveFile("Image", "news")
-	message.ImgUrl = url
-	message.MessageTypeId, _ = c.GetInt("type")
-	if err :=message.Insert(); err != nil {
+	news.ImgUrl = url
+	news.MessageTypeId, _ = c.GetInt("type")
+	if err := news.Insert(); err != nil {
 		c.Data["json"] = ResultMsg(400, "新增失败", err)
 	}else {
 		c.Data["json"]= ResultMsg(200, "新增成功", nil)
@@ -67,7 +67,7 @@ func (c *MainController) Save(){
 }
 
 func (c *MainController) GetFlags(){
-	var mf m.MessageFlag
+	var mf m.NewsFlag
 	typeId, _ := c.GetInt("type")
 	l,_ :=mf.QueryAll(typeId)
 	c.Data["json"]= ResultMsg(200, "查询成功", l)
