@@ -55,10 +55,58 @@ var FailInfo = {
     schoolReg: '学校名称不能为空！',
     classReg: '班级名称不能为空！',
 };
-renderType();
-var ue = UE.getEditor('para2');
 
-function renderType(){
+var _id = GetURLValueByKeyName('id'),
+    ue = UE.getEditor('para2');
+
+if(_id){
+    $('.type-text').html('/修改');
+    getInfoFn();
+}else{
+    $('.type-text').html('/新增');
+    renderType();
+}
+
+function getInfoFn(){
+    $.ajax({
+        url: '/getInfo',
+        type: 'GET',
+        dataType: 'json',
+        data: {id: _id}
+    })
+    .done(function(data) {
+        if(GetAttr(data,'meta.code') == 200 || GetAttr(data,'meta.code') == 201){
+            var curData = data.data || {};
+            $('.item').find('.msg-name').val(curData.Name); //标题
+            $('.item').find('.user-text').val(curData.Description); //描述
+
+            if(curData.MessageTypeId == 2){
+                $('.top-operate').find('a[data-type=1]').attr({'class': 'btn btn-green'});
+                $('.top-operate').find('a[data-type=2]').attr({'class': 'btn btn-blue'});
+            }
+
+            renderType(curData.MessageFlagId);
+
+            if(curData.ImgUrl){
+                var fileNameLen = curData.ImgUrl.split('/');
+                $('.item').find('.file-wrap').find('span').eq(0).html(fileNameLen[fileNameLen.length-1]);        
+            }
+
+            ue.ready(function(){
+                ue.setContent(curData.Context);
+            });
+
+        }else{
+            var content = GetAttr(data,'meta.msg') || '系统处理异常！';
+            ErrorCallback(content);
+        }
+    })
+    .fail(function() {
+        ErrorCallback();
+    });
+}
+
+function renderType(index){
     var _type = $('.btn-blue').attr('data-type');
     $.ajax({
         url: '/getFlags',
@@ -71,7 +119,11 @@ function renderType(){
             var _html = '';
             var _data = data.data || [];
             for(var i = 0, l = _data.length; i < l; i++){
-                _html += '<option value="'+_data[i]['Id']+'">'+_data[i]['Name']+'</option>';
+                if(index && _data[i]['Id'] == index){
+                    _html += '<option selected value="'+_data[i]['Id']+'">'+_data[i]['Name']+'</option>';
+                }else{
+                    _html += '<option value="'+_data[i]['Id']+'">'+_data[i]['Name']+'</option>';
+                }
             }
             $('.news-type').html(_html);
         }else{
@@ -87,6 +139,7 @@ function renderType(){
 $('body').on('change','.file',function(){
     var _this = $(this);
     var fileName = _this.val();
+    console.log(fileName)
     if(_this.hasClass('xls-file')){   
         if(!Config.xlsReg.test(fileName)){
             _this.val('');
@@ -123,12 +176,15 @@ $('.btn-submit').on('click', function() {
     var _this = $(this);
     var $item = _this.closest('.item');
     var _data = {};
+    if(_id){
+        _data.id = _id;
+    }
     var _existfileids = [];
     _data.title = $.trim($item.find('.msg-name').val()); //标题
     _data.description = $.trim($item.find('.user-text').val()); //描述
     _data.flag = $.trim($item.find('.news-type').val()); //类型
     _data.content = ue.getContent(); //内容
-    _data.type = $('.btn-blue').attr('data-type'); //消息类型 
+    _data.type = $('.btn-blue').attr('data-type'); //信息类型 
 
     if(!ValidateText({dom: $item.find('.msg-name'),reg: Config.titleReg,text: FailInfo.titleReg})){
         return false;
@@ -138,10 +194,10 @@ $('.btn-submit').on('click', function() {
         return false;
     }
 
-    if(!$item.find('.file').val()){
-        ErrorCallback('请上传图片！',3);
-        return false;
-    }
+    // if(!$item.find('.file').val()){
+    //     ErrorCallback('请上传图片！',3);
+    //     return false;
+    // }
 
     if(!_data.content){
         ErrorCallback('请编辑内容！',3);
@@ -156,7 +212,12 @@ $('.btn-submit').on('click', function() {
         success:function(data){
             CloseLoad();
             if(GetAttr(data,'meta.code') == 200 || GetAttr(data,'meta.code') == 201){
-                Smallpop('消息新增成功！');
+                if(_id){
+                    Smallpop('信息修改成功！');
+                }else{
+                    Smallpop('信息新增成功！');
+                }
+                //self.opener.location.reload();
             }else{
                 var content = GetAttr(data,'meta.msg') || '系统处理异常！';
                 ErrorCallback(content);
