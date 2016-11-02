@@ -12,4 +12,5 @@ func init() {
     beego.Router("/content", &controllers.MainController{}, "get:Content")
     beego.Router("/save", &controllers.MainController{}, "post:Save")
     beego.Router("/getFlags", &controllers.MainController{}, "post:GetFlags")
+    beego.Router("/getInfo", &controllers.MainController{}, "get:GetInfo")
 }

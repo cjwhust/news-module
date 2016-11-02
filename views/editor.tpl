@@ -11,12 +11,12 @@
 <body>
 <div id="content">
   <div class="item" style="display: block;">
-      <h2 class="top-title">消息中心/新增</h2>
+      <h2 class="top-title">信息中心<span class="type-text"></span></h2>
       <p class="top-tip"></p>
       <hr/>
       <form method="post" action="#" enctype="multipart/form-data">
           <div class="top-operate btn-box btn-top-box">
-            <a data-type="1" class="btn btn-blue" href="javascript:;">校园新闻</a>
+            <a data-type="1" class="btn btn-blue" href="javascript:;">新闻通告</a>
             <a data-type="2" class="btn btn-green" href="javascript:;">公益频道</a>
           </div>
           <div class="box user-box cf">
@@ -38,7 +38,7 @@
                       </div>
                   </li>
                   <li class="cf file-li">
-                      <span>*图片：</span>
+                      <span>图片：</span>
                       <div>
                           <div class="file-box first-file file-wrap">
                               <a href="javascript:;" class="btn btn-file">选择文件</a>

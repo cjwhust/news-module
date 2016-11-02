@@ -47,6 +47,13 @@ func (m *News) Insert() error {
 	return  nil
 }
 
+func (m *News) Update(fields ...string) error {
+	if _, err := orm.NewOrm().Update(m, fields...); err!=nil{
+		return  err
+	}
+	return nil
+}
+
 func GetOneMessage(id string)(m *News, err error){
 	m = &News{Id: id}
 	if err = orm.NewOrm().Read(m); err == nil{
